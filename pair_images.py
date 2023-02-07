@@ -25,7 +25,7 @@ target_path = '/home/cihe/Shroud/dataset/train/train/'
 def iterate(folder_path, folder_path2):
     files1 = Path(folder_path).glob('*')
     files2 = Path(folder_path2).glob('*')
-    for fhs in zip( sorted(files1) , sorted(files2)):
+    for fhs in zip(sorted(files1), sorted(files2)):
         yield fhs
 
 

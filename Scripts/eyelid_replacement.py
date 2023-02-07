@@ -3,10 +3,10 @@ import cv2 as cv  # import the OpenCV package. cv2 denotes the OpenCV package
 import numpy as np  # import Python maths lib. Numpy& name its np
 from pathlib import Path  #import Path lib. to manage files
 
-def skin_tone_eye(eye_list, im_full):
+def skin_tone_eye(eye_list, image):
 
 
-  l_eye = cv.imrad(str(Path(eye_list[0])))
+  l_eye = cv.imread(str(Path(eye_list[0])))
   r_eye = cv.imread(str(Path(eye_list[1])))
   #grayscale r_eye and l_eye
   r_eye = cv.cvtColor(r_eye, cv.COLOR_BGR2GRAY)
@@ -31,7 +31,7 @@ def skin_tone_eye(eye_list, im_full):
   for i in range(i_max - 3, i_max + 3):
     for j in range(j_max - 3, j_max +3):
       count += 1
-      color_sum += im_full[i_max + 20][j_max][:]
+      color_sum += image[i_max + 20][j_max][:]
   color_avg = color_sum/count
 
   #combine r_eye & l_eye mask
@@ -58,7 +58,7 @@ def skin_tone_eye(eye_list, im_full):
   for x in range(0, rows):
       for y in range(0, cols):
         if mask[x][y] == 255:
-          im_full[x][y] = 0 # add mask to original image but in black
+          image[x][y] = 0 # add mask to original image but in black
 
   #apply skin-tone colored mask to original
   # rows = l_eye.shape[0]
@@ -66,6 +66,6 @@ def skin_tone_eye(eye_list, im_full):
   for x in range(0, rows):
       for y in range(0, cols):
         if l_eye[x][y] == 255:
-          im_full[x][y] = color_avg
+          image[x][y] = color_avg
 
-  return im_full
+  return image
