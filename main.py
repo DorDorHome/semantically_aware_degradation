@@ -16,6 +16,8 @@ def main(photo_directory, mask_directory, output_directory):
     print('running main()')
     for i in range(0, 30000):
         file_name = '**/' + str(i).zfill(5) + '_*'
+
+        #list of files in mask
         mask_list = list(mask_directory.glob(file_name))
 
         full_image_name = '**/' + str(i) + '.jpg'
@@ -38,6 +40,7 @@ def main(photo_directory, mask_directory, output_directory):
         hairlist = list(mask_directory.glob(hair_file_name))
         im = hair_brighten(hairlist, im)
 
+        #image adjustments
         im = preprocessing(im)
 
         outfile = output_directory + os.path.basename(str(i)) + '.jpg'
