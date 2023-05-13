@@ -10,16 +10,32 @@ from Scripts.hairmask import hair_brighten
 
 def main(photo_directory, mask_directory, output_directory):
     photo_directory = Path(photo_directory)
-    mask_directory = Path(mask_directory)
-    output_directory = output_directory
+    # print('photo directory =', photo_directory)
 
-    print('running main()')
+    # print(list(photo_directory.glob('*')))
+    mask_directory = Path(mask_directory)
+    print('size of all matching files in photo_directory: ', len(list(photo_directory.glob('43.jpg'))))
+    print('size of all matching files in mask_directory: ', len(list(mask_directory.rglob('00000_*.png'))))
+    output_directory = output_directory
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
+
+
+    print('running main')
     for i in range(0, 30000):
-        file_name = '**/' + str(i).zfill(5) + '_*'
+        if i%100 ==0:
+            print(f'processing {i}-th photo')
+        file_name = str(i).zfill(5) + '_*'
+
+        print('file_name ', file_name, ', of type: ', type(file_name))
 
         #list of files in mask
-        mask_list = list(mask_directory.glob(file_name))
+        # background_mask_directory = 
 
+        mask_list = list(mask_directory.rglob(file_name))
+
+
+        print('size of mask_list: ', len(mask_list))
         full_image_name = '**/' + str(i) + '.jpg'
         original_image = cv.imread(str(Path(list(photo_directory.glob(full_image_name))[0])))
         original_image = cv.resize(original_image, (512, 512), interpolation=cv.INTER_AREA)
@@ -42,15 +58,21 @@ def main(photo_directory, mask_directory, output_directory):
 
         #image adjustments
         im = preprocessing(im)
-
+#
         outfile = output_directory + os.path.basename(str(i)) + '.jpg'
         print(outfile)
         status = cv.imwrite(outfile, im)
 
+#TODO: make 5 iterations per image
+# randomize hair brightening as effect not idea
+# Randomize linen texture overlay i.e. which sections on the texture and different textures
+
 
 if __name__ == '__main__':
-    PHOTO_DIRECTORY = '/home/student/Desktop/shroud_models/Datasets/CelebAMask-HQ/CelebA-HQ-img/'
-    MASK_DIRECTORY = '/home/student/Desktop/shroud_models/Datasets/CelebAMask-HQ/CelebAMask-HQ-mask-anno/'
-    OUTPUT_SHROUD_DIRECTORY = '/home/student/Desktop/shroud_models/Datasets/CelebAMask-HQ/test/'
+    PHOTO_DIRECTORY = '/Users/shufaichan/Documents/datasets/CelebAMask-HQ/CelebA-HQ-img'
+
+    MASK_DIRECTORY = '/Users/shufaichan/Documents/datasets/CelebAMask-HQ/CelebA-HQ-img'
+
+    OUTPUT_SHROUD_DIRECTORY = '/Users/shufaichan/Documents/datasets/CelebAMask-HQ/artiticial_shroud_dataset'
 
     main(PHOTO_DIRECTORY, MASK_DIRECTORY, OUTPUT_SHROUD_DIRECTORY)
