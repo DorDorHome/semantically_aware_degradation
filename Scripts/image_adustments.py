@@ -66,7 +66,7 @@ def preprocessing(im):
     im = add_noise(im)
     # desaturate
     im = cv.cvtColor(im, cv.COLOR_BGR2GRAY)
-    # gaussian blue
-
+    # gaussian blur
+#TODO: Randomize Blur
     im = cv.GaussianBlur(im, (25, 25), 0)
     return im
