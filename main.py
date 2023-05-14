@@ -72,10 +72,10 @@ if __name__ == '__main__':
 
     
 
-    PHOTO_DIRECTORY = '/Users/shufaichan/Documents/datasets/CelebAMask-HQ/CelebA-HQ-img'
+    PHOTO_DIRECTORY = '/Users/shufaichan/Documents/datasets/CelebAMask-HQ/CelebA-HQ-img/'
 
     MASK_DIRECTORY = '/Users/shufaichan/Documents/datasets/CelebAMask-HQ/CelebAMask-HQ-mask-anno'
 
-    OUTPUT_SHROUD_DIRECTORY = '/Users/shufaichan/Documents/datasets/CelebAMask-HQ/artiticial_shroud_dataset'
+    OUTPUT_SHROUD_DIRECTORY = '/Users/shufaichan/Documents/datasets/CelebAMask-HQ/artiticial_shroud_dataset/'
 
     main(PHOTO_DIRECTORY, MASK_DIRECTORY, OUTPUT_SHROUD_DIRECTORY)
