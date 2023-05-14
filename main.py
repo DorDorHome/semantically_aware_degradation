@@ -69,9 +69,12 @@ def main(photo_directory, mask_directory, output_directory):
 
 
 if __name__ == '__main__':
+
+    
+
     PHOTO_DIRECTORY = '/Users/shufaichan/Documents/datasets/CelebAMask-HQ/CelebA-HQ-img'
 
-    MASK_DIRECTORY = '/Users/shufaichan/Documents/datasets/CelebAMask-HQ/CelebA-HQ-img'
+    MASK_DIRECTORY = '/Users/shufaichan/Documents/datasets/CelebAMask-HQ/CelebAMask-HQ-mask-anno'
 
     OUTPUT_SHROUD_DIRECTORY = '/Users/shufaichan/Documents/datasets/CelebAMask-HQ/artiticial_shroud_dataset'
 
