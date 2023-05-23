@@ -8,7 +8,7 @@ from Scripts.image_adustments import preprocessing, preprocessing_randomized
 from Scripts.hairmask import hair_brighten
 
 
-def main(photo_directory, mask_directory, output_directory):
+def main(photo_directory, mask_directory, output_directory, num_degradation_per_image =1 ):
     photo_directory = Path(photo_directory)
 
 
@@ -47,43 +47,54 @@ def main(photo_directory, mask_directory, output_directory):
         original_image = cv.imread(str(Path(list(photo_directory.glob(full_image_name))[0])))
         original_image = cv.resize(original_image, (512, 512), interpolation=cv.INTER_AREA)
 
-        # remove background
-        # im = bg_remove(mask_list, original_image)
-        im = bg_removal_optimized(mask_list, original_image)
-
-        # eyes
+        # mask for eye file path
         eyes_file_name = '**/' + str(i).zfill(5) + '*eye.png'
         eye_list = list(mask_directory.glob(eyes_file_name))
+
         # face (for calculating ideal average pixel values of face)
+        # mask for face file path
         face_file_name = '**/' + str(i).zfill(5) + '*skin.png'
         face_list = list(mask_directory.glob(face_file_name))
 
-        if len(eye_list) >= 2:
-            # im = skin_tone_eye(eyelist, im)
-            im = skin_tone_eye_optimized_randomized(eye_list, face_list, im, i = i, randomize = True, thickness_lower_bound = 0, thickness_upper_bound = 8, 
-                                       blur_kernel_size_lower_bound =5, blur_kernel_size_upper_bound = 15, output_directory=output_directory)
-
-        # hair
+        # mask for hair file path
         hair_file_name = '**/' + str(i).zfill(5) + '*hair.png'
-        hairlist = list(mask_directory.glob(hair_file_name))
-        im = hair_brighten(hairlist, im)
 
-        #image adjustments
-        # im = preprocessing(im)
-        print('check im type: ', type(im))
-        im = preprocessing_randomized(im, rough_low_cut_off = 170, rough_high_cut_off = 240,
-                              sigma_input = 6, num_points = 7,
-                                rough_max_output = 250, rough_min_output = 5,
-                                sigma_output = 20, noise_level_low_bound = 0.2,
-                                noise_level_upper_bound = 1, blur_level = 25)
+        # remove background
+        # im = bg_remove(mask_list, original_image)
+        im_bg_removed = bg_removal_optimized(mask_list, original_image)
 
-        # Path for storing results:
-        outfile = output_directory +'/'+ os.path.basename(str(i)) + '.jpg'
-        #print(outfile)
 
-#
 
-        status = cv.imwrite(outfile, im)
+
+
+        # the following are randomized:
+        for degrad_trial in range(num_degradation_per_image):
+            if len(eye_list) >= 2:
+                # im = skin_tone_eye(eyelist, im)
+                im = skin_tone_eye_optimized_randomized(eye_list, face_list, im_bg_removed, i = i, randomize = True, thickness_lower_bound = 0, thickness_upper_bound = 8, 
+                                        blur_kernel_size_lower_bound =5, blur_kernel_size_upper_bound = 15, output_directory=output_directory)
+
+            # hair
+
+            hairlist = list(mask_directory.glob(hair_file_name))
+            im = hair_brighten(hairlist, im)
+
+            #image adjustments
+            # im = preprocessing(im)
+            # print('check im type: ', type(im))
+            im = preprocessing_randomized(im, rough_low_cut_off = 170, rough_high_cut_off = 240,
+                                sigma_input = 6, num_points = 7,
+                                    rough_max_output = 250, rough_min_output = 5,
+                                    sigma_output = 20, noise_level_low_bound = 0.2,
+                                    noise_level_upper_bound = 1, blur_level = 25)
+
+            # Path for storing results:
+            outfile = output_directory +'/'+ os.path.basename(str(i)) + f'_{degrad_trial}'+'.jpg'
+            #print(outfile)
+
+    #
+
+            status = cv.imwrite(outfile, im)
 
 #TODO: make 5 iterations per image
 # randomize hair brightening as effect not idea
@@ -105,5 +116,6 @@ if __name__ == '__main__':
 
     OUTPUT_SHROUD_DIRECTORY = '/Users/shufaichan/Documents/datasets/CelebAMask-HQ/artiticial_shroud_dataset'
 
+    num_degradation_per_image = 4
 
-    main(PHOTO_DIRECTORY, MASK_DIRECTORY, OUTPUT_SHROUD_DIRECTORY)
+    main(PHOTO_DIRECTORY, MASK_DIRECTORY, OUTPUT_SHROUD_DIRECTORY, num_degradation_per_image =  num_degradation_per_image)
