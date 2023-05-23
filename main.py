@@ -60,7 +60,7 @@ def main(photo_directory, mask_directory, output_directory):
 
         if len(eye_list) >= 2:
             # im = skin_tone_eye(eyelist, im)
-            im = skin_tone_eye_optimized_randomized(eye_list, face_list, im, i = i, randomize = True, thickness_lower_bound = 1, thickness_upper_bound = 8, 
+            im = skin_tone_eye_optimized_randomized(eye_list, face_list, im, i = i, randomize = True, thickness_lower_bound = 0, thickness_upper_bound = 8, 
                                        blur_kernel_size_lower_bound =5, blur_kernel_size_upper_bound = 15, output_directory=output_directory)
 
         # hair
@@ -70,6 +70,7 @@ def main(photo_directory, mask_directory, output_directory):
 
         #image adjustments
         # im = preprocessing(im)
+        print('check im type: ', type(im))
         im = preprocessing_randomized(im, rough_low_cut_off = 170, rough_high_cut_off = 240,
                               sigma_input = 6, num_points = 7,
                                 rough_max_output = 250, rough_min_output = 5,
@@ -77,8 +78,8 @@ def main(photo_directory, mask_directory, output_directory):
                                 noise_level_upper_bound = 1, blur_level = 25)
 
         # Path for storing results:
-        outfile = output_directory + os.path.basename(str(i)) + '.jpg'
-        print(outfile)
+        outfile = output_directory +'/'+ os.path.basename(str(i)) + '.jpg'
+        #print(outfile)
 
 #
 
@@ -93,12 +94,16 @@ if __name__ == '__main__':
 
     
 
-    PHOTO_DIRECTORY = '/home/sfchan/Desktop/Datasets/CelebAMask-HQ/CelebA-HQ-img'
+    PHOTO_DIRECTORY ='/Users/shufaichan/Documents/datasets/CelebAMask-HQ/CelebA-HQ-img'
+
+    # '/home/sfchan/Desktop/Datasets/CelebAMask-HQ/CelebA-HQ-img'
 
 
-    MASK_DIRECTORY = '/home/sfchan/Desktop/Datasets/CelebAMask-HQ/CelebAMask-HQ-mask-anno'
+    MASK_DIRECTORY = '/Users/shufaichan/Documents/datasets/CelebAMask-HQ/CelebAMask-HQ-mask-anno'
 
-    OUTPUT_SHROUD_DIRECTORY = '/home/sfchan/Desktop/Datasets/CelebAMask-HQ/artificial_shroud_dataset_randomized/'
+
+
+    OUTPUT_SHROUD_DIRECTORY = '/Users/shufaichan/Documents/datasets/CelebAMask-HQ/artiticial_shroud_dataset'
 
 
     main(PHOTO_DIRECTORY, MASK_DIRECTORY, OUTPUT_SHROUD_DIRECTORY)

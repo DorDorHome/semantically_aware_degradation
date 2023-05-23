@@ -63,7 +63,7 @@ def bg_removal_optimized(mask_list, original_image):
     add = cv.imread(str(Path(mask_list[i]))) #read image from masks
     # add = cv.cvtColor(add, cv.COLOR_BGR2GRAY)# probably no needed
     mask_array_list.append(add)
-    print('type of add', type(add))
+    # print('type of add', type(add))
   # step 2: create a combined mask
   combined_mask = np.maximum.reduce(mask_array_list)
 

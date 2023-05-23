@@ -133,52 +133,82 @@ def create_tone_curve_points(rough_low_cut_off , rough_high_cut_off = 255, sigma
 def apply_tone_curve(image, input_points, output_points):
     # Create a lookup table using the input and output points for the tone curve
     lookup_table = np.zeros(256, dtype=np.uint8)
+    # print('input points', input_points)
+    # print('output points, ',output_points)
+    lookup_table[0:int(input_points[0])] = int(output_points[0])
     for i in range(len(input_points) - 1):
         start_input = int(input_points[i])
         end_input = int(input_points[i + 1])
         start_output = int(output_points[i])
         end_output = int(output_points[i + 1])
+        lookup_table[start_input:end_input +1] = np.linspace(start_output, end_output, end_input - start_input+1)
+
+    lookup_table[int(input_points[len(input_points)-1]):] = int(output_points[len(input_points)-1])
 
         # Linear interpolation between input and output points
-        lookup_table[start_input:end_input +1] = np.linspace(start_output, end_output, end_input - start_input +1)
-        print('lookup table is', lookup_table)
+
+    # print('lookup table is', lookup_table)
+    print('size of the lookup table:', lookup_table.shape)
     # Apply the tone curve to each channel of the image
-    tone_curved_image = cv.LUT(image, lookup_table, )
+
+    tone_curved_image = cv.LUT(image, lookup_table )
 
     return tone_curved_image
 
 def apply_tone_curve_optimized(image, input_points, output_points):
     # Create the lookup table using input and output points
-    lookup_table = np.interp(np.arange(256), input_points, output_points).astype(np.uint8)
+    lookup_table = np.interp(np.arange(256), input_points, output_points)
+    lookup_table = np.round(lookup_table).astype(np.uint8)
+    image= image.astype(np.uint8)
+    # print('size of the lookup table:', lookup_table.shape)
+
+    # print('lookup table dtype:', lookup_table.dtype)
 
     # Apply the tone curve to each channel of the image
     tone_curved_image = cv.LUT(image, lookup_table)
 
     return tone_curved_image
 
+# def apply_tone_curve_optimized(image, input_points, output_points):
+#     # Create the lookup table using input and output points
+#     lookup_table = np.interp(np.arange(256), input_points, output_points)
+#     lookup_table = np.round(lookup_table).astype(np.uint8)
+#     print('size of the lookup table:', lookup_table.shape)
+
+#     print('lookup table dtype:', lookup_table.dtype)
+#     image= image.astype(np.uint8)
+#     # Apply the tone curve to each channel of the image
+#     tone_curved_image = np.zeros_like(image)
+#     for i in range(image.shape[2]):
+#         tone_curved_image[:, :, i] = cv.LUT(image[:, :, i], lookup_table)
+
+#     return tone_curved_image
+
 def preprocessing_randomized(image, rough_low_cut_off = 170, rough_high_cut_off = 240,
                               sigma_input = 6, num_points = 7,
                                 rough_max_output = 250, rough_min_output = 5,
-                                sigma_output = 20, noise_level_low_bound = 0.2,
-                                noise_level_upper_bound = 1, blur_level = 25):
+                                sigma_output = 20, noise_level_low_bound = 0.3,
+                                noise_level_upper_bound = 2, blur_level = 25):
     input_points_list, output_points_list = create_tone_curve_points(rough_low_cut_off = rough_low_cut_off, 
                                                                      rough_high_cut_off = rough_high_cut_off ,
                                                                        sigma_input = sigma_input, num_points = num_points, 
                                                                        rough_max_output = rough_max_output, rough_min_output = rough_min_output, 
                                                                        sigma_output = sigma_output)
     
-    tone_curved_image = apply_tone_curve(image, input_points_list, output_points_list)
+    # tone_curved_image = apply_tone_curve(image, input_points_list, output_points_list)
+    tone_curved_image =  apply_tone_curve_optimized(image, input_points_list, output_points_list)
 
     noise_level = np.random.uniform(noise_level_low_bound, noise_level_upper_bound)
     gauss = noise_level*np.random.randn(*image.shape)
     gauss = np.uint8(gauss)
     # adding noise to the tone curve adjusted image:
+    # tone_curved_image = cv.GaussianBlur(tone_curved_image, (blur_level, blur_level), 0)
     tone_curved_image += gauss
 
     # desaturate the tone curve adjusted image:
     grey_image = cv.cvtColor(tone_curved_image, cv.COLOR_BGR2GRAY)
 
-      # adding blur 
+      # adding blur after noise. 
     grey_image = cv.GaussianBlur(grey_image, (blur_level, blur_level), 0)
 
     return grey_image

@@ -74,7 +74,7 @@ def skin_tone_eye(eye_list, image):
 
 
 
-def skin_tone_eye_optimized_randomized(eye_list, face_list, image, i = None, randomize = True, thickness_lower_bound = 7, thickness_upper_bound = 15, 
+def skin_tone_eye_optimized_randomized(eye_list, face_list, image, i = None, randomize = True, thickness_lower_bound = 0, thickness_upper_bound = 10, 
                                        blur_kernel_size_lower_bound =5, blur_kernel_size_upper_bound = 15, output_directory = None):
 
   # step 1: load the left and right eye images from the paths:
@@ -93,17 +93,17 @@ def skin_tone_eye_optimized_randomized(eye_list, face_list, image, i = None, ran
   else:
     average_face_value = 255
   
-  print('average face value =', average_face_value)
+  #print('average face value =', average_face_value)
   
-  eyelips_replacement = (combined_eye!=0)*average_face_value*1.35
+  eyelips_replacement = (combined_eye!=0)*average_face_value*1.2
 
-  cv.imwrite(output_directory+ '/'+ os.path.basename(str(i))+'_eyelips_replacement.jpg', eyelips_replacement)
+  #cv.imwrite(output_directory+ '/'+ os.path.basename(str(i))+'_eyelips_replacement.jpg', eyelips_replacement)
 
 
 
   # step 4: remove eye by darkening it:
   image = np.minimum(255- combined_eye, image)
-  cv.imwrite(output_directory+ '/'+ os.path.basename(str(i))+'step4.jpg', image)
+  #cv.imwrite(output_directory+ '/'+ os.path.basename(str(i))+'step4.jpg', image)
 
 
    # step 4: create a blurred combined_eye_mask:
@@ -121,7 +121,7 @@ def skin_tone_eye_optimized_randomized(eye_list, face_list, image, i = None, ran
 
   # step 5: replace it with the skin tone values:
   image = np.maximum(image, eyelips_replacement_blur)
-  cv.imwrite(output_directory+ '/'+ os.path.basename(str(i))+'step5.jpg', image)
+  #cv.imwrite(output_directory+ '/'+ os.path.basename(str(i))+'step5.jpg', image)
 
 
 
@@ -144,7 +144,7 @@ def skin_tone_eye_optimized_randomized(eye_list, face_list, image, i = None, ran
       cv.drawContours(contour_mask, [c], -1, (0, 0, 0), thickness=thickness)
   
   image = np.minimum(image, contour_mask)
-  cv.imwrite(output_directory+ '/'+ os.path.basename(str(i))+'final_step.jpg', image)
+  #cv.imwrite(output_directory+ '/'+ os.path.basename(str(i))+'final_step.jpg', image)
 
 
   return image
