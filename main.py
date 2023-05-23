@@ -3,8 +3,8 @@ import cv2 as cv
 from pathlib import Path
 
 from Scripts.BG_removal import bg_remove, bg_removal_optimized
-from Scripts.eyelid_replacement import skin_tone_eye
-from Scripts.image_adustments import preprocessing
+from Scripts.eyelid_replacement import skin_tone_eye, skin_tone_eye_optimized_randomized
+from Scripts.image_adustments import preprocessing, preprocessing_randomized
 from Scripts.hairmask import hair_brighten
 
 
@@ -30,6 +30,7 @@ def main(photo_directory, mask_directory, output_directory):
 
         file_name = str(i).zfill(5) + '_*'
 
+
         # for monitoring progress:
         if i%100 ==0:
             print(f'processing {i}-th photo')
@@ -52,11 +53,15 @@ def main(photo_directory, mask_directory, output_directory):
 
         # eyes
         eyes_file_name = '**/' + str(i).zfill(5) + '*eye.png'
-        eyelist = list(mask_directory.glob(eyes_file_name))
-        # print(eyelist)
+        eye_list = list(mask_directory.glob(eyes_file_name))
+        # face (for calculating ideal average pixel values of face)
+        face_file_name = '**/' + str(i).zfill(5) + '*skin.png'
+        face_list = list(mask_directory.glob(face_file_name))
 
-        if len(eyelist) >= 2:
-            im = skin_tone_eye(eyelist, im)
+        if len(eye_list) >= 2:
+            # im = skin_tone_eye(eyelist, im)
+            im = skin_tone_eye_optimized_randomized(eye_list, face_list, im, i = i, randomize = True, thickness_lower_bound = 1, thickness_upper_bound = 8, 
+                                       blur_kernel_size_lower_bound =5, blur_kernel_size_upper_bound = 15, output_directory=output_directory)
 
         # hair
         hair_file_name = '**/' + str(i).zfill(5) + '*hair.png'
@@ -64,10 +69,19 @@ def main(photo_directory, mask_directory, output_directory):
         im = hair_brighten(hairlist, im)
 
         #image adjustments
-        im = preprocessing(im)
-#
+        # im = preprocessing(im)
+        im = preprocessing_randomized(im, rough_low_cut_off = 170, rough_high_cut_off = 240,
+                              sigma_input = 6, num_points = 7,
+                                rough_max_output = 250, rough_min_output = 5,
+                                sigma_output = 20, noise_level_low_bound = 0.2,
+                                noise_level_upper_bound = 1, blur_level = 25)
+
+        # Path for storing results:
         outfile = output_directory + os.path.basename(str(i)) + '.jpg'
         print(outfile)
+
+#
+
         status = cv.imwrite(outfile, im)
 
 #TODO: make 5 iterations per image
@@ -84,7 +98,7 @@ if __name__ == '__main__':
 
     MASK_DIRECTORY = '/home/sfchan/Desktop/Datasets/CelebAMask-HQ/CelebAMask-HQ-mask-anno'
 
-    OUTPUT_SHROUD_DIRECTORY = '/home/sfchan/Desktop/Datasets/CelebAMask-HQ/artificial_shroud_dataset/'
+    OUTPUT_SHROUD_DIRECTORY = '/home/sfchan/Desktop/Datasets/CelebAMask-HQ/artificial_shroud_dataset_randomized/'
 
 
     main(PHOTO_DIRECTORY, MASK_DIRECTORY, OUTPUT_SHROUD_DIRECTORY)
