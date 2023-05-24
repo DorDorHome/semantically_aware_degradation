@@ -25,7 +25,7 @@ def main(photo_directory, mask_directory, output_directory, num_degradation_per_
 
 
     print('running main')
-    for i in range(0, 30000):
+    for i in range(10863, 30000):
         
 
         file_name = str(i).zfill(5) + '_*'
@@ -64,7 +64,7 @@ def main(photo_directory, mask_directory, output_directory, num_degradation_per_
         im_bg_removed = bg_removal_optimized(mask_list, original_image)
 
 
-
+        print('im_bg_removed shape', im_bg_removed.shape)
 
 
         # the following are randomized:
@@ -73,7 +73,8 @@ def main(photo_directory, mask_directory, output_directory, num_degradation_per_
                 # im = skin_tone_eye(eyelist, im)
                 im = skin_tone_eye_optimized_randomized(eye_list, face_list, im_bg_removed, i = i, randomize = True, thickness_lower_bound = 0, thickness_upper_bound = 8, 
                                         blur_kernel_size_lower_bound =5, blur_kernel_size_upper_bound = 15, output_directory=output_directory)
-
+            else:
+                im = im_bg_removed
             # hair
 
             hairlist = list(mask_directory.glob(hair_file_name))

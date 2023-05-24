@@ -196,6 +196,7 @@ def preprocessing_randomized(image, rough_low_cut_off = 170, rough_high_cut_off 
                                                                        sigma_output = sigma_output)
     
     # tone_curved_image = apply_tone_curve(image, input_points_list, output_points_list)
+    print('shape of original image:', image.shape)
     tone_curved_image =  apply_tone_curve_optimized(image, input_points_list, output_points_list)
 
     noise_level = np.random.uniform(noise_level_low_bound, noise_level_upper_bound)
@@ -205,6 +206,7 @@ def preprocessing_randomized(image, rough_low_cut_off = 170, rough_high_cut_off 
     # tone_curved_image = cv.GaussianBlur(tone_curved_image, (blur_level, blur_level), 0)
     tone_curved_image += gauss
 
+    print('shape of tone_curved_image', tone_curved_image.shape)
     # desaturate the tone curve adjusted image:
     grey_image = cv.cvtColor(tone_curved_image, cv.COLOR_BGR2GRAY)
 
